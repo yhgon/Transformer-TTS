@@ -16,30 +16,30 @@
 ## Data
 * I used LJSpeech dataset which consists of pairs of text script and wav files. The complete dataset (13,100 pairs) can be downloaded [here](https://keithito.com/LJ-Speech-Dataset/). I referred https://github.com/keithito/tacotron and https://github.com/Kyubyong/dc_tts for the preprocessing code.
 
-### step1. prepare dataset
-- *configure hyperparam* ( hyungon's experiment) (TODO) match waveglow parameters 
+### step1. prepare dataset  (TODO) replace hyungon's audio util(CPU) and R's util(GPU) 
+- configure hyperparam ( hyungon's experiment) (TODO) match waveglow parameters 
    - sampling rate : 22050
    - num_mels : 80
    - n_FFT : 1024
    - windows size : 0.04644 ( same size of nFFT) 
    - hop_size : 0.01161 ( 1/4 of windows size)
    - preamp : 1 ( no preamp)
-   - log_power : 2 
-   - min_DB : -80
-   - ref_DB :  20
+   - log_power : 2 ( for librosa default) 
    
- - * generate Mel and Mag *
+ -  generate Mel and Mag 
    - run `python prepare_data.py`
-    for original wav : `LJSpeech-1.1\wavs\LJ001-0001.wav`
-    it will make mag : `LJSpeech-1.1wavs\LJ001-0001.mag.npy` (TODO) sperate mag/mel directory 
-    it will make mel : `LJSpeech-1.1\wavs\LJ001-0001.pt.npy` (TODO) sperate mag/mel directory `mel.npy` instead of `pt.npy`
+    -- for original wav : `LJSpeech-1.1\wavs\LJ001-0001.wav`
+    -- it will make mag : `LJSpeech-1.1wavs\LJ001-0001.mag.npy` (TODO) sperate mag/mel directory 
+    -- it will make mel : `LJSpeech-1.1\wavs\LJ001-0001.pt.npy` (TODO) sperate mag/mel directory `mel.npy` instead of `pt.npy`
                  
 ### step2. train posnet 
 - *train mel to mag* to generate high fidelity audio with griffin-lim (TODO) waveglow instead of posnet 
 - with Tesla V100(1GPU), with batch 64, it needs 204 iter for single epoch
 - it will take 1min 54 sec ( 1.80 iter/s) per epoch
-- it will take 13 day, 316 hr, 1140k sec for 10K epoch (TODO) check convergence and modify epoch (TODO) seperate epoch for posnet and transformer
- (TODO) multiGPU ( apex) 
+- it will take 13 day, 316 hr, 1140k sec for 10K epoch 
+   (TODO) check convergence and modify epoch 
+   (TODO) seperate epoch for posnet and transformer
+   (TODO) multiGPU ( apex) 
 
 ### step3. preprocess dataset
 - *make pair of audio/text* for transformer
@@ -48,8 +48,10 @@
 - with Tesla V100(1GPU), with batch 64, OOM
 - with Tesla V100(1GPU), with batch 32, it needs 409 iter for single epoch
 - it will take 1min 54 sec ( 3.7 iter/s) per epoch
-- it will take 13 day, 316 hr, 1140k sec for 10K epoch (TODO) check convergence and modify epoch (TODO) seperate epoch for posnet and transformer
- (TODO) multiGPU ( apex) 
+- it will take 13 day, 316 hr, 1140k sec for 10K epoch 
+   (TODO) check convergence and modify epoch 
+   (TODO) seperate epoch for posnet and transformer
+   (TODO) multiGPU ( apex) 
 
 ## Attention plots
 * A diagonal alignment appeared after about 15k steps. The attention plots below are at 160k steps. Plots represent the multihead attention of all layers. In this experiment, h=4 is used for three attention layers. Therefore, 12 attention plots were drawn for each of the encoder, decoder and encoder-decoder. With the exception of the decoder, only a few multiheads showed diagonal alignment.

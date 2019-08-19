@@ -35,10 +35,10 @@
 * I used Noam style warmup and decay as same as [Tacotron](https://github.com/Kyubyong/tacotron)
 - post_mel_loss : 0.01524 for 1.5M iter (3.6K epoch)
 - text2mel loss : 0.2347 for 754K iter  (3.8K epoch)
-<img src="png/yhgon_train_loss_compare_new.png">
+<img src="png/yhgon_train_loss_compare.png">
 
 * The alpha value for the scaled position encoding is different from the thesis. In the paper, the alpha value of the encoder and decoders  are increased to 4(encoder) and 1.2(decoder) and it dereased continuously. 
-<img src="png/PE_scale_paper.png">  
+<img src="png/PE_scale_paper_new.png">  
 
 In the present experiment, the *encoder alpha* is slightly decrese (0.87) during 16K iterations  and it increased to (1.082) during 25K iterations and then decreased continuously. The *decoder alpha* has steadily decreased since the beginning.
 <img src="png/yhgon_PE_scale.png">  

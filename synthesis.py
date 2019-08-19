@@ -10,7 +10,7 @@ from tqdm import tqdm
 import argparse
 
 def load_checkpoint(step, model_name="transformer"):
-    state_dict = t.load('/mnt/git/checkpoint/trans_tts/ch/checkpoint_%s_%d.pth.tar'% (model_name, step))   
+    state_dict = t.load('/mnt/git/checkpoints/trans_tts/ch/checkpoint_%s_%d.pth.tar'% (model_name, step))   
     new_state_dict = OrderedDict()
     for k, value in state_dict['model'].items():
         key = k[7:]

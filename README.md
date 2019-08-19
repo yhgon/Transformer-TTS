@@ -40,7 +40,7 @@
 * The alpha value for the scaled position encoding is different from the thesis. In the paper, the alpha value of the encoder and decoders  are increased to 4(encoder) and 1.2(decoder)
 <img src="png/PE_scale_paper.png">  
 
-In the present experiment, the decoder alpha is slightly increased at the beginning(1.05) and then decreased continuously. The decoder alpha has steadily decreased since the beginning.
+In the present experiment, the decoder alpha is slightly decrese (0.87) during 16K iterations  and it increased to (1.082) during 25K iterations and then decreased continuously. The decoder alpha has steadily decreased since the beginning.
 <img src="png/yhgon_PE_scale.png">  
 
 ## Experimental notes

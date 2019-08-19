@@ -16,43 +16,6 @@
 ## Data
 * I used LJSpeech dataset which consists of pairs of text script and wav files. The complete dataset (13,100 pairs) can be downloaded [here](https://keithito.com/LJ-Speech-Dataset/). I referred https://github.com/keithito/tacotron and https://github.com/Kyubyong/dc_tts for the preprocessing code.
 
-### step1. prepare dataset  (TODO) replace hyungon's audio util(CPU) and R's util(GPU) 
-- configure hyperparam ( hyungon's experiment) (TODO) match waveglow parameters 
-   - sampling rate : 22050
-   - num_mels : 80
-   - n_FFT : 1024
-   - windows size : 0.04644 ( same size of nFFT) 
-   - hop_size : 0.01161 ( 1/4 of windows size)
-   - preamp : 1 ( no preamp)
-   - log_power : 2 ( for librosa default) 
-   
- -  generate Mel and Mag 
-   - run `python prepare_data.py`
-    -- for original wav : `LJSpeech-1.1\wavs\LJ001-0001.wav`
-    -- it will make mag : `LJSpeech-1.1wavs\LJ001-0001.mag.npy` (TODO) sperate mag/mel directory 
-    -- it will make mel : `LJSpeech-1.1\wavs\LJ001-0001.pt.npy` (TODO) sperate mag/mel directory `mel.npy` instead of `pt.npy`
-                 
-### step2. train posnet 
-- *train mel to mag* to generate high fidelity audio with griffin-lim (TODO) waveglow instead of posnet 
-- with Tesla V100(1GPU), with batch 64, it needs 204 iter for single epoch
-- it will take 1min 54 sec ( 1.80 iter/s) per epoch
-- it will take 13 day, 316 hr, 1140k sec for 10K epoch 
-   (TODO) check convergence and modify epoch 
-   (TODO) seperate epoch for posnet and transformer
-   (TODO) multiGPU ( apex) 
-
-### step3. preprocess dataset
-- *make pair of audio/text* for transformer
-
-### step5. train transformer
-- with Tesla V100(1GPU), with batch 64, OOM
-- with Tesla V100(1GPU), with batch 32, it needs 409 iter for single epoch
-- it will take 1min 54 sec ( 3.7 iter/s) per epoch
-- it will take 13 day, 316 hr, 1140k sec for 10K epoch 
-   (TODO) check convergence and modify epoch 
-   (TODO) seperate epoch for posnet and transformer
-   (TODO) multiGPU ( apex) 
-
 ## Attention plots
 * A diagonal alignment appeared after about 15k steps. The attention plots below are at 160k steps. Plots represent the multihead attention of all layers. In this experiment, h=4 is used for three attention layers. Therefore, 12 attention plots were drawn for each of the encoder, decoder and encoder-decoder. With the exception of the decoder, only a few multiheads showed diagonal alignment.
 
@@ -68,11 +31,11 @@
 ## Learning curves & Alphas
 * I used Noam style warmup and decay as same as [Tacotron](https://github.com/Kyubyong/tacotron)
 
-<img src="png/training_loss.png">
+<img src="png/yhgon_train_loss.png">
 
 * The alpha value for the scaled position encoding is different from the thesis. In the paper, the alpha value of the encoder is increased to 4, whereas in the present experiment, it slightly increased at the beginning and then decreased continuously. The decoder alpha has steadily decreased since the beginning.
 
-<img src="png/alphas.png">
+<img src="png/yhgon_PE_scale.png">  
 
 ## Experimental notes
 1. **The learning rate is an important parameter for training.** With initial learning rate of 0.001 and exponentially decaying doesn't work.
@@ -88,13 +51,13 @@
     * [sample3](https://soundcloud.com/ksrbpbmcxrzu/160k_sample_2)
 
 * The first plot is the predicted mel spectrogram, and the second is the ground truth.
-<img src="png/mel_pred.png" width="800">
+<img src="png/mel_pred.png" width="800"> 
 <img src="png/mel_original.png" width="800">
 
 ## File description
   * `hyperparams.py` includes all hyper parameters that are needed.
-  * `prepare_data.py` preprocess wav files to mel, linear spectrogram and save them for faster training time. Preprocessing codes for text is in text/ directory.
-  * `preprocess.py` includes all preprocessing codes when you loads data.
+  * `prepare_data.py` preprocess wav files to mel, linear spectrogram and save them for faster training time. 
+  * `preprocess.py` includes all preprocessing codes when you loads data. Preprocessing codes for text is in text/ directory.
   * `module.py` contains all methods, including attention, prenet, postnet and so on.
   * `network.py` contains networks including encoder, decoder and post-processing network.
   * `train_transformer.py` is for training autoregressive attention network. (text --> mel)
@@ -103,10 +66,45 @@
 
 ## Training the network
   * STEP 1. Download and extract LJSpeech data at any directory you want.
+            (TODO) replace hyungon's audio util(CPU) and R's util(GPU) 
+
   * STEP 2. Adjust hyperparameters in `hyperparams.py`, especially 'data_path' which is a directory that you extract files, and the others if necessary.
+            - configure hyperparam ( hyungon's experiment) (TODO) match waveglow parameters 
+            - sampling rate : 22050
+            - num_mels : 80
+            - n_FFT : 1024
+            - windows size : 0.04644 ( same size of nFFT) 
+            - hop_size : 0.01161 ( 1/4 of windows size)
+            - preamp : 1 ( no preamp)
+            - log_power : 2 ( for librosa default) 
+  
   * STEP 3. Run `prepare_data.py`.
-  * STEP 4. Run `train_transformer.py`.
-  * STEP 5. Run `train_postnet.py`.
+            -  generate Mel and Mag 
+             -- for original wav : `LJSpeech-1.1\wavs\LJ001-0001.wav`
+             -- it will make mag : `LJSpeech-1.1wavs\LJ001-0001.mag.npy` (TODO) sperate mag/mel directory 
+             -- it will make mel : `LJSpeech-1.1\wavs\LJ001-0001.pt.npy` (TODO) sperate mag/mel directory `mel.npy` instead of `pt.npy`  
+  * STEP 4. Run `preprocess.py`.
+            - *make pair of audio/text* for transformer
+  
+  * STEP 5. Run `train_transformer.py`.
+            - with Tesla V100(1GPU), with batch 64, OOM
+            - with Tesla V100(1GPU), with batch 32, it needs 409 iter for single epoch
+            - it will take 1min 54 sec ( 3.7 iter/s) per epoch
+            - it will take 13 day, 316 hr, 1140k sec for 10K epoch 
+             -- (TODO) check convergence and modify epoch 
+             -- (TODO) seperate epoch for posnet and transformer
+             -- (TODO) multiGPU ( apex) 
+  
+  
+  * STEP 6. Run `train_postnet.py`.
+           - *train mel to mag* to generate high fidelity audio with griffin-lim (TODO) waveglow instead of posnet 
+           - with Tesla V100(1GPU), with batch 64, it needs 204 iter for single epoch
+           - it will take 1min 54 sec ( 1.80 iter/s) per epoch
+           - it will take 13 day, 316 hr, 1140k sec for 10K epoch 
+            -- (TODO) check convergence and modify epoch 
+            -- (TODO) seperate epoch for posnet and transformer
+            -- (TODO) multiGPU ( apex) 
+
 
 ## Generate TTS wav file
   * STEP 1. Run `synthesis.py`. Make sure the restore step. 

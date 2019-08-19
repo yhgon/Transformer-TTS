@@ -20,37 +20,42 @@
 * A diagonal alignment appeared after about 15k steps. The attention plots below are at 160k steps. Plots represent the multihead attention of all layers. In this experiment, h=4 is used for three attention layers. Therefore, 12 attention plots were drawn for each of the encoder, decoder and encoder-decoder. With the exception of the decoder, only a few multiheads showed diagonal alignment.
 
 ### Self Attention encoder
+(TODO update)
 <img src="png/attention_encoder.gif" height="200">
 
 ### Self Attention decoder
+(TODO update)
 <img src="png/attention_decoder.gif" height="200">
 
 ### Attention encoder-decoder
+(TODO update)
 <img src="png/attention.gif" height="200">
 
 ## Learning curves & Alphas
 * I used Noam style warmup and decay as same as [Tacotron](https://github.com/Kyubyong/tacotron)
+- post_mel_loss : 0.01524 for 1.5M iter (3.6K epoch)
+- text2mel loss : 0.2347 for 754K iter  (3.8K epoch)
+<img src="png/yhgon_train_loss_compare.png">
 
-<img src="png/yhgon_train_loss.png">
+* The alpha value for the scaled position encoding is different from the thesis. In the paper, the alpha value of the encoder and decoders  are increased to 4(encoder) and 1.2(decoder)
+<img src="png/PE_scale_paper.png">  
 
-* The alpha value for the scaled position encoding is different from the thesis. In the paper, the alpha value of the encoder is increased to 4, whereas in the present experiment, it slightly increased at the beginning and then decreased continuously. The decoder alpha has steadily decreased since the beginning.
-
+In the present experiment, the decoder alpha is slightly increased at the beginning(1.05) and then decreased continuously. The decoder alpha has steadily decreased since the beginning.
 <img src="png/yhgon_PE_scale.png">  
 
 ## Experimental notes
-1. **The learning rate is an important parameter for training.** With initial learning rate of 0.001 and exponentially decaying doesn't work.
-2. **The gradient clipping is also an important parameter for training.** I clipped the gradient with norm value 1.
-3. With the stop token loss, the model did not training.
-4. **It was very important to concatenate the input and context vectors in the Attention mechanism.**
+
 
 ## Generated Samples
 * You can check some generated samples below. All samples are step at 160k, so I think the model is not converged yet. This model seems to be lower performance in long sentences.
 
+(TODO update)
     * [sample1](https://soundcloud.com/ksrbpbmcxrzu/160k-0)
     * [sample2](https://soundcloud.com/ksrbpbmcxrzu/160k_sample_1)
     * [sample3](https://soundcloud.com/ksrbpbmcxrzu/160k_sample_2)
 
 * The first plot is the predicted mel spectrogram, and the second is the ground truth.
+(TODO update)
 <img src="png/mel_pred.png" width="800"> 
 <img src="png/mel_original.png" width="800">
 

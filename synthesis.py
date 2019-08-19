@@ -47,7 +47,7 @@ def synthesis(text, args):
         mag_pred = m_post.forward(postnet_pred)
         
     wav = spectrogram2wav(mag_pred.squeeze(0).cpu().numpy())
-    write(hp.sample_path + "/synthesis.wav", hp.sr, wav)
+    write(hp.sample_path + "/synthesis_{}_{}.wav".format(args.restore_step1,args.restore_step1), hp.sr, wav)
     
 if __name__ == '__main__':
     
